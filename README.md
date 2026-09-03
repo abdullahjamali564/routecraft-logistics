@@ -182,4 +182,4 @@ The repository ignores `.env` files, dependency folders, build output, and logs.
 
 ## License
 
-No license has been selected for this repository yet. Add a `LICENSE` file before presenting the project as open source.
+MIT license has been selected for this repository.
