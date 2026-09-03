@@ -1,0 +1,28 @@
+# Dependencies
+**/node_modules/
+
+# Build and generated output
+**/dist/
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/coverage/
+
+# Local configuration and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+n8n/*.log
+
+# IDE and operating-system files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db

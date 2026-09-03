@@ -1,0 +1,12 @@
+{
+  "name": "Nightly Maintenance",
+  "nodes": [
+    { "parameters": { "rule": { "interval": [ { "field": "cronExpression", "expression": "0 2 * * *" } ] } }, "id": "nightly-cron", "name": "Nightly 02:00", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1.2, "position": [0, 0] },
+    { "parameters": { "method": "POST", "url": "={{$env.BACKEND_URL}}/api/v1/automation/maintenance/nightly", "sendHeaders": true, "headerParameters": { "parameters": [ { "name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}" } ] } }, "id": "tally-mileage", "name": "Tally Mileage And Flag ERP", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [300, 0] },
+    { "parameters": { "method": "POST", "url": "={{$env.ERP_MAINTENANCE_URL}}", "sendBody": true, "specifyBody": "json", "jsonBody": "={{$json.data}}" }, "id": "erp-sync", "name": "Sync ERP Maintenance Flags", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [600, 0] }
+  ],
+  "connections": { "Nightly 02:00": { "main": [[{ "node": "Tally Mileage And Flag ERP", "type": "main", "index": 0 }]] }, "Tally Mileage And Flag ERP": { "main": [[{ "node": "Sync ERP Maintenance Flags", "type": "main", "index": 0 }]] } },
+  "active": false,
+  "settings": {},
+  "versionId": "routecraft-nightly-maintenance"
+}

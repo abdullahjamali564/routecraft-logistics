@@ -1,0 +1,13 @@
+{
+  "name": "Dispatch Order",
+  "nodes": [
+    { "parameters": { "httpMethod": "POST", "path": "order-created", "responseMode": "onReceived" }, "id": "dispatch-webhook", "name": "Order Created", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [0, 0] },
+    { "parameters": { "method": "GET", "url": "={{$env.BACKEND_URL}}/api/v1/automation/drivers/nearby", "sendQuery": true, "queryParameters": { "parameters": [ { "name": "latitude", "value": "={{$json.body.order.pickup.coordinates[1]}}" }, { "name": "longitude", "value": "={{$json.body.order.pickup.coordinates[0]}}" }, { "name": "radiusMeters", "value": "={{$env.DISPATCH_RADIUS_METERS || 5000}}" } ] }, "sendHeaders": true, "headerParameters": { "parameters": [ { "name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}" } ] } }, "id": "find-drivers", "name": "Find Idle Drivers", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [300, 0] },
+    { "parameters": { "jsCode": "const drivers = $json.data ?? [];\ndrivers.sort((a, b) => (a.currentParcelCount - b.currentParcelCount) || (a.distanceMeters - b.distanceMeters));\nreturn [{ json: { event: $('Order Created').first().json, selectedDriver: drivers[0] ?? null } }];" }, "id": "rank-drivers", "name": "Rank Capacity Then Proximity", "type": "n8n-nodes-base.code", "typeVersion": 2, "position": [540, 0] },
+    { "parameters": { "method": "PATCH", "url": "={{$env.BACKEND_URL}}/api/v1/orders/{{$json.selectedDriver ? $json.event.body.order.id : ''}}/assign", "sendHeaders": true, "headerParameters": { "parameters": [ { "name": "x-webhook-secret", "value": "={{$env.N8N_WEBHOOK_SECRET}}" }, { "name": "content-type", "value": "application/json" } ] }, "sendBody": true, "specifyBody": "json", "jsonBody": "={\"driverId\": \"{{$json.selectedDriver._id}}\"}" }, "id": "assign-driver", "name": "Assign Best Driver", "type": "n8n-nodes-base.httpRequest", "typeVersion": 4.2, "position": [780, 0] }
+  ],
+  "connections": { "Order Created": { "main": [[{ "node": "Find Idle Drivers", "type": "main", "index": 0 }]] }, "Find Idle Drivers": { "main": [[{ "node": "Rank Capacity Then Proximity", "type": "main", "index": 0 }]] }, "Rank Capacity Then Proximity": { "main": [[{ "node": "Assign Best Driver", "type": "main", "index": 0 }]] } },
+  "active": false,
+  "settings": {},
+  "versionId": "routecraft-dispatch-order"
+}

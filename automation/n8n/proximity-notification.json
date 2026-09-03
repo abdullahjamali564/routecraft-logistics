@@ -1,0 +1,10 @@
+{
+  "name": "Proximity Notification",
+  "nodes": [
+    { "parameters": { "httpMethod": "POST", "path": "driver-near-dropoff", "responseMode": "onReceived" }, "id": "proximity-webhook", "name": "Driver Near Drop-off", "type": "n8n-nodes-base.webhook", "typeVersion": 2, "position": [0, 0] }
+  ],
+  "connections": { "Driver Near Drop-off": { "main": [[]] } },
+  "active": false,
+  "settings": {},
+  "versionId": "routecraft-proximity-notification"
+}
